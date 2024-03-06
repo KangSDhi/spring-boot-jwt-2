@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.sigit.springbootjwt.dto.JwtAuthenticationResponse;
 import dev.sigit.springbootjwt.dto.SigninRequest;
 import dev.sigit.springbootjwt.services.JWTService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -90,7 +91,7 @@ public class AuthenticationControllerTest {
     @Order(4)
     void testJwtMalformed(){
         Exception exception = assertThrows(MalformedJwtException.class, () -> {
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/user")
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/admin")
                             .contentType("application/json")
                             .header("Authorization", "Bearer " + JWT_MALFORMED))
                     .andExpect(status().isForbidden())
@@ -101,6 +102,24 @@ public class AuthenticationControllerTest {
 
         String expectedMessage = "Malformed JWT";
         String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    @Order(5)
+    void testJwtExpired(){
+        Exception exception = assertThrows(ExpiredJwtException.class, () -> {
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/admin")
+                            .contentType("application/json")
+                            .header("Authorization", "Bearer " + JWT_EXPIRED))
+                    .andExpect(status().isForbidden())
+                    .andDo(print());
+        });
+
+        String expectedMessage = "JWT expired";
+        String actualMessage = exception.getMessage();
+//        System.out.println(actualMessage);
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
