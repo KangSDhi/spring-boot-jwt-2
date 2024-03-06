@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: mysql:8.3.0
+    container_name: spring-boot-jwt-dev-db
+
+    ports:
+      - 3005:3306
+
+    environment:
+      MYSQL_ROOT_PASSWORD: 'toor'
+      MYSQL_DATABASE: 'spring-jwt-db'
+      MYSQL_USER: 'spring'
+      MYSQL_PASSWORD: 'boot'
+
+    volumes:
+      - spring-boot-jwt-dev-data:/var/lib/mysql
+
+    networks:
+      - spring-boot-jwt-dev-net
+
+
+volumes:
+  spring-boot-jwt-dev-data:
+    driver: local
+
+networks:
+  spring-boot-jwt-dev-net:
+    driver: bridge
